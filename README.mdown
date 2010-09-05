@@ -81,7 +81,7 @@ Limitions
         Write in one line
         if(a) b();
 
-2. If /* style comment didn't close by */ and deleted, any code input after will indent incorrect, because the indenter consider the code still is in the comment.
+2. If /\* style comment didn't close by \*/ and deleted, any code input after will indent incorrect, because the indenter consider the code still is in the comment.
 
         Solution:
         use gg=G to reindent whole text to fix it.
