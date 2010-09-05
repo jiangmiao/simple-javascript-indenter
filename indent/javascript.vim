@@ -2,7 +2,7 @@
 " Language:	JavaScript
 " Maintainer:	JiangMiao <jiangfriend@gmail.com>
 " Last Change:  2010-09-03
-" Version: 1.1
+" Version: 1.0.1
 
 if exists('b:did_indent')
   finish
