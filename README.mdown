@@ -1,0 +1,87 @@
+Simply Javascript Indenter
+==========================
+A simple vim indent plugin for javascript, support OOP, jquery
+
+Install details
+---------------
+
+copy indent/javascript.vim to ~/.vim/indent
+
+Indent Effects
+--------------
+    /*
+    * Comment Test 
+    */
+    {
+      /* comment a { */
+      // comment c {
+      comment('/* com' c, a /* commen{t a */); /* c */ // d
+      ok();
+    }
+
+    // Function nested
+    ;(function($) {
+        $(document).ready(function() {
+            $('#foo').click(function() {
+                $.post(url, {
+                    a: 1, 
+                    b: 2,
+                  }, function() {
+                    ok(); 
+                  }
+                );
+            });
+        });
+    })(jQuery);
+
+
+    // Array Object Test
+    string_test("('",'("',"[",'{',"\"{","\\'{"); 
+    {
+      array_test: [
+        1,
+        2
+      ],
+
+      array_hash_test: [
+        {
+          a: 'a',
+          b: [3,4],
+          c: [
+            3,
+            4
+          ],
+          d: string_test("('",'("',"[",'{',"\"{","\\'{"); 
+        }
+      ],
+
+      function_test: function() {
+        return 0;
+      },
+
+      one_line_function_test: function() { return [1] };
+    }
+
+Limitions
+---------
+
+1. Unsupport to indent 'if', 'while' without brackets.**
+
+        eg:
+        if(a)
+        b();
+        will not be indented.
+        
+        Solution:
+        Use brackets.
+        if(a) {
+          b();
+        }
+        or
+        Write in one line
+        if(a) b();
+
+2. If /* style comment didn't close by */ and deleted, any code input after will indent incorrect, because the indenter consider the code still is in the comment.
+
+        Solution:
+        use gg=G to reindent whole text to fix it.
