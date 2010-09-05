@@ -2,7 +2,7 @@
 " Language:	JavaScript
 " Maintainer:	JiangMiao <jiangfriend@gmail.com>
 " Last Change:  2010-09-03
-" Version: 1.0
+" Version: 1.1
 
 if exists('b:did_indent')
   finish
@@ -16,20 +16,6 @@ setlocal indentkeys+=0},0),0],0=*/,0=/*
 if exists("*GetJsIndent")
     finish 
 endif
-function Match_num(str,v)
-  let rt=0
-  let last=0
-  while 1
-    let last=match(a:str,a:v,last)
-    if(last==-1)
-      break
-    endif
-    let rt=rt+1
-    let last=last+1
-  endwhile
-  return rt
-endif
-endfunction
 
 " Check prev line
 function! DoIndentPrev(ind,str,v,c) 
@@ -45,6 +31,7 @@ function! DoIndentPrev(ind,str,v,c)
     let str = pline[last]
     let last = last + 1
 
+    " continue until meet '{[('
     if str == a:c
       let first = 0
     endif
@@ -75,14 +62,13 @@ function! DoIndent(ind, str, v, c)
     endif
     let str = line[last]
     let last = last + 1
+
+    " break if meet '{[('
     if str == a:c
-      let first = 0
+      break
     endif
-    if first != 0
-      let ind = ind - &sw
-      continue
-    endif
-    break
+
+    let ind = ind - &sw
   endwhile
   return ind
 endfunction
@@ -116,16 +102,17 @@ endfunction
 
 
 function! GetJsIndent()
-    let pnum = prevnonblank(v:lnum - 1)
     let oline = getline(v:lnum)
     let line = TrimLine(getline(v:lnum))
-    if(pnum==0)
+    if(v:lnum==1)
       let b:is_comment=0
       let pline=''
+      let ind = 0
     else
+      let pnum = prevnonblank(v:lnum - 1)
       let pline = TrimLine(getline(pnum))
+      let ind = indent(pnum)
     endif
-    let ind = indent(pnum)
 
     
     if(b:in_comment==0)
@@ -141,7 +128,7 @@ function! GetJsIndent()
     endif
 
     if(b:in_comment==1)
-      if(match(line, "\\*/")!=-1)
+      if(match(line, "\\*/")!=-1||match(pline, "\\*/")!=-1)
         let b:in_comment = 0
       endif
     endif
