@@ -2,9 +2,9 @@
 * Comment Test 
 */
 {
-  /* comment a { */
-  // comment c {
-  comment('/* com' c, a /* commen{t a */); /* c */ // d
+  /* a [{( */
+  // b [{(
+  comment('/* com', a /* [{( */); /* c */ // d
   ok();
 }
 
@@ -23,16 +23,12 @@
     });
 })(jQuery);
 
-
 // Array Object Test
 string_test("('",'("',"[",'{',"\"{","\\'{"); 
 {
-  array_test: [
+  array_object_test: [
     1,
     2
-  ],
-
-  array_hash_test: [
     {
       a: 'a',
       b: [3,4],
@@ -40,7 +36,7 @@ string_test("('",'("',"[",'{',"\"{","\\'{");
         3,
         4
       ],
-      d: string_test("('",'("',"[",'{',"\"{","\\'{"); 
+      d: string_test("('",'("',"[",'{',"\"{","\\'{")
     }
   ],
 
