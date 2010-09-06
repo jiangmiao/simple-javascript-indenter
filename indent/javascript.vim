@@ -54,7 +54,6 @@ function! DoIndent(ind, str)
   let last = 0
   let first = 1
   let mstr = matchstr(line, '^'.s:expr_right.'*')
-  echo mstr
   let ind = ind - &sw * strlen(mstr)
   return ind
 endfunction
@@ -125,7 +124,6 @@ function! GetJsIndent()
           endif
           break
         elseif(match(pline,'^.*=.*'.s:expr_special_char)!=-1)
-          echo pline
           if search_back == 0
             let ind = ind+strlen(matchstr(pline,'^.*=\s*'))
           end
