@@ -1,8 +1,8 @@
 " Vim indent file
 " Language:	JavaScript
 " Maintainer:	JiangMiao <jiangfriend@gmail.com>
-" Last Change:  2010-09-03
-" Version: 1.0.1
+" Last Change:  2010-09-06
+" Version: 1.1.0
 
 if exists('b:did_indent')
   finish
@@ -14,7 +14,7 @@ let b:in_comment = 0
 setlocal indentexpr=GetJsIndent()
 setlocal indentkeys+=0},0),0],0=*/,0=/*
 if exists("*GetJsIndent")
-    finish 
+  finish 
 endif
 
 " Check prev line
@@ -97,41 +97,88 @@ function! TrimLine(pline)
   if(b:in_comment)
     let line = substitute(line, "^.*\\*/",'*/','')
   endif
+  let line = matchlist(line, "^\\s*\\(.\\{-}\\)\\s*$")[1]
   return line
 endfunction
 
 
+let s:expr_special_char = "[\\+\\-\\*\\|\\&|\\,|\\/]$"
 function! GetJsIndent()
-    let oline = getline(v:lnum)
-    let line = TrimLine(getline(v:lnum))
-    if(v:lnum==1)
-      let b:is_comment=0
-      let pline=''
-      let ind = 0
+  let oline = getline(v:lnum)
+  let line = TrimLine(getline(v:lnum))
+  if(v:lnum==1)
+    let b:is_comment=0
+    let pline=''
+    let ind = 0
+  else
+    let pnum = prevnonblank(v:lnum - 1)
+    let pline = TrimLine(getline(pnum))
+    let ind = indent(pnum)
+  endif
+
+  if(b:in_comment==0)
+    let ppnum = prevnonblank(pnum -1)
+    let ppline = TrimLine(getline(ppnum))
+
+    " if pline or ppline has special character end try indent
+    if match(pline, s:expr_special_char) != -1 || match(ppline, s:expr_special_char) != -1
+      let search_back = 0
+      while 1
+        if pnum == 0
+          let pline=''
+          let ind = 0
+          break
+        end
+        let pline = TrimLine(getline(pnum))
+        let ind = indent(pnum)
+        let pnum = prevnonblank(pnum - 1)
+        if(match(pline,'^var\s\+.*,$')!=-1)
+          if search_back == 0
+            let ind = ind+strlen(matchstr(pline,'var\s\+'))
+          endif
+          break
+        elseif(match(pline,"^.*=.*".s:expr_special_char)!=-1)
+          if search_back == 0
+            let ind = ind+strlen(matchstr(pline,"^.*=\\s*"))
+          end
+          break
+        else
+          " if in search back but it is not continual with special char, so break
+          if search_back > 0 && match(pline, s:expr_special_char) == -1
+            let pnum = prevnonblank(v:lnum - 1)
+            let pline = TrimLine(getline(pnum))
+            let ind = indent(pnum)
+            break
+          endif
+        endif
+        if search_back
+          continue
+        endif
+        if(match(pline, s:expr_special_char) == -1)
+          let search_back = 1
+          continue
+        endif
+        break
+      endwhile
     else
-      let pnum = prevnonblank(v:lnum - 1)
-      let pline = TrimLine(getline(pnum))
-      let ind = indent(pnum)
     endif
 
-    
-    if(b:in_comment==0)
-      let items = [ ['[\{\}]','{'], ['[\[\]]','['], ['[\(\)]','('] ]
-      for item in items
-        let ind = DoIndentPrev(ind, pline, item[0],item[1])
-        let ind = DoIndent(ind, line, item[0],item[1])
-      endfor
-    endif
+    let items = [ ['[\{\}]','{'], ['[\[\]]','['], ['[\(\)]','('] ]
+    for item in items
+      let ind = DoIndentPrev(ind, pline, item[0],item[1])
+      let ind = DoIndent(ind, line, item[0],item[1])
+    endfor
+  endif
 
-    if(match(line, "/\\*")!=-1) 
-      let b:in_comment = 1
-    endif
+  if(match(line, "/\\*")!=-1) 
+    let b:in_comment = 1
+  endif
 
-    if(b:in_comment==1)
-      if(match(line, "\\*/")!=-1||match(pline, "\\*/")!=-1)
-        let b:in_comment = 0
-      endif
+  if(b:in_comment==1)
+    if(match(line, "\\*/")!=-1||match(pline, "\\*/")!=-1)
+      let b:in_comment = 0
     endif
+  endif
 
-    return ind
+  return ind
 endfunction
