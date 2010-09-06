@@ -1,8 +1,8 @@
 " Vim indent file
 " Language:	JavaScript
 " Maintainer:	JiangMiao <jiangfriend@gmail.com>
-" Last Change:  2010-09-06
-" Version: 1.1.0
+" Last Change:  2010-09-07
+" Version: 1.1.1
 
 if exists('b:did_indent')
   finish
@@ -12,34 +12,32 @@ let b:indented = 0
 let b:in_comment = 0
 
 setlocal indentexpr=GetJsIndent()
-setlocal indentkeys+=0},0),0],0=*/,0=/*
+setlocal indentkeys+=0},0),0],0=*/,0=/*,*<Return>
 if exists("*GetJsIndent")
   finish 
 endif
 
+let s:expr_left = '[\[\{\(]'
+let s:expr_right = '[\)\}\]]'
+let s:expr_all = '[\[\{\(\)\}\]]'
+
 " Check prev line
-function! DoIndentPrev(ind,str,v,c) 
+function! DoIndentPrev(ind,str) 
   let ind = a:ind
   let pline = a:str
   let first = 1
   let last = 0
+  let mstr = matchstr(pline, '^'.s:expr_right.'*')
+  let last = strlen(mstr)
   while 1
-    let last=match(pline, a:v, last)
+    let last=match(pline, s:expr_all, last)
     if last == -1
       break
     endif
     let str = pline[last]
     let last = last + 1
 
-    " continue until meet '{[('
-    if str == a:c
-      let first = 0
-    endif
-    if first != 0
-      continue
-    endif
-
-    if str == a:c
+    if match(str, s:expr_left) != -1
       let ind = ind + &sw
     else
       let ind = ind - &sw
@@ -50,26 +48,14 @@ function! DoIndentPrev(ind,str,v,c)
 endfunction
 
 " Check current line
-function! DoIndent(ind, str, v, c) 
+function! DoIndent(ind, str) 
   let ind = a:ind
   let line = a:str
   let last = 0
   let first = 1
-  while 1
-    let last=match(line, a:v, last)
-    if last== -1
-      break
-    endif
-    let str = line[last]
-    let last = last + 1
-
-    " break if meet '{[('
-    if str == a:c
-      break
-    endif
-
-    let ind = ind - &sw
-  endwhile
+  let mstr = matchstr(line, '^'.s:expr_right.'*')
+  echo mstr
+  let ind = ind - &sw * strlen(mstr)
   return ind
 endfunction
 
@@ -97,12 +83,13 @@ function! TrimLine(pline)
   if(b:in_comment)
     let line = substitute(line, "^.*\\*/",'*/','')
   endif
+  let line = substitute(line, '\(||\|&&\)','','g')
   let line = matchlist(line, "^\\s*\\(.\\{-}\\)\\s*$")[1]
   return line
 endfunction
 
 
-let s:expr_special_char = "[\\+\\-\\*\\|\\&|\\,|\\/]$"
+let s:expr_special_char = '[\+\-\*\/\|\&\,]$'
 function! GetJsIndent()
   let oline = getline(v:lnum)
   let line = TrimLine(getline(v:lnum))
@@ -121,7 +108,7 @@ function! GetJsIndent()
     let ppline = TrimLine(getline(ppnum))
 
     " if pline or ppline has special character end try indent
-    if match(pline, s:expr_special_char) != -1 || match(ppline, s:expr_special_char) != -1
+    if (match(pline, s:expr_special_char) != -1 || match(ppline, s:expr_special_char) != -1)
       let search_back = 0
       while 1
         if pnum == 0
@@ -137,9 +124,10 @@ function! GetJsIndent()
             let ind = ind+strlen(matchstr(pline,'var\s\+'))
           endif
           break
-        elseif(match(pline,"^.*=.*".s:expr_special_char)!=-1)
+        elseif(match(pline,'^.*=.*'.s:expr_special_char)!=-1)
+          echo pline
           if search_back == 0
-            let ind = ind+strlen(matchstr(pline,"^.*=\\s*"))
+            let ind = ind+strlen(matchstr(pline,'^.*=\s*'))
           end
           break
         else
@@ -163,11 +151,8 @@ function! GetJsIndent()
     else
     endif
 
-    let items = [ ['[\{\}]','{'], ['[\[\]]','['], ['[\(\)]','('] ]
-    for item in items
-      let ind = DoIndentPrev(ind, pline, item[0],item[1])
-      let ind = DoIndent(ind, line, item[0],item[1])
-    endfor
+    let ind = DoIndentPrev(ind, pline)
+    let ind = DoIndent(ind, line)
   endif
 
   if(match(line, "/\\*")!=-1) 
