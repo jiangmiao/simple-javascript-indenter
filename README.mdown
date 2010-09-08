@@ -11,21 +11,35 @@ Indent Effects
 --------------
         /*
         * Comment Test 
+        * function() {
         */
         {
           /* a [{( */
           // b [{(
           comment('/* com', a /* [{( */); /* c */ // d
           ok();
+          // Assign Test
           var a, /* { */
               b, // [
               c = '{'
-          var a = 1,
-              c = 0;
+          var a = "Hello" +
+                  "World"
+          d = function() {
+            aoeu
+          }
+          var k = function() {
+            var k=3,
+                m=4
+          }
+
+          var rurl = /{[('"/,
+              r20 = /%20/g,
+
+          a = 1,
+          b = 2
           a = 1 +
               2 *
               3
-          d
         }
 
         // Function nested
@@ -64,26 +78,32 @@ Indent Effects
           ]
         }
 
-Troubleshootings
----------
-
-1. Unsupport to indent 'if', 'while' without brackets.**
-
-        eg:
-        if(a)
-        b();
-        will not be indented.
-        
-        Solution:
-        Use brackets.
-        if(a) {
-          b();
+        // One Line Test
+        {
+          if( a == b &&
+            c == d ||
+            e == f) 
+          {
+            ok();
+          }
+          if(a) {
+            b;
+          } else {
+            e;
+          }
+          if(a)
+            b;
+          else if(k) {
+            aeou
+          } else
+            c;
+          while(true)
+            foo += 1;
+          try
+            a;
+          catch
+            b;
+          finally
+            c;
+          ok();
         }
-        or
-        Write in one line
-        if(a) b();
-
-2. If /\* style comment didn't close by \*/ and deleted, any code input after will indent incorrect, because the indenter consider the code still is in the comment.
-
-        Solution:
-        use gg=G to reindent whole text to fix it.

@@ -1,3 +1,10 @@
+2010-09-08 Version 1.2.0
+	Support: indent for if, else, else if, while, try, catch, finally
+	without brackets
+
+2010-09-07 Version 1.1.2
+	FIX: indent error for regexp
+
 2010-09-07 Version 1.1.1
 	FIX: indent error for code
 	if( A ||
