@@ -2,7 +2,7 @@
 " Language:	JavaScript
 " Maintainer:	JiangMiao <jiangfriend@gmail.com>
 " Last Change:  2010-09-08
-" Version: 1.2.0
+" Version: 1.2.1
 
 if exists('b:did_indent')
   finish
@@ -64,8 +64,8 @@ endfunction
 
 " Remove strings and comments
 function! TrimLine(pline)
-  let line = substitute(a:pline, "\\\\\\\\", ' ','g')
-  let line = substitute(line, "\\\\.", ' ','g')
+  let line = substitute(a:pline, "\\\\\\\\", '_','g')
+  let line = substitute(line, "\\\\.", '_','g')
 
   " Strings
   let new_line = ''
@@ -73,14 +73,14 @@ function! TrimLine(pline)
     let new_line = line
     let m = matchstr(line,'[''"]')
     if m==''''
-      let line = substitute(new_line, "'[^']*'", '','')
+      let line = substitute(new_line, "'[^']*'", '_','')
     elseif m=='"'
-      let line = substitute(new_line, '"[^"]*"','','')
+      let line = substitute(new_line, '"[^"]*"','_','')
     endif
   endwhile
   " Regexp
-  let line = substitute(line, '^/[^/]\+/','','g')
-  let line = substitute(line, '[^/]/[^/]\+/','','g')
+  let line = substitute(line, '^/[^\*].*/','_','g')
+  let line = substitute(line, '[^/]/[^*].*/','_','g')
 
   " Comment
   let line = substitute(line, "/\\*.\\{-}\\*/",'','g')
@@ -93,7 +93,7 @@ function! TrimLine(pline)
   let new_line = ''
   while new_line != line
     let new_line = line
-    let line = substitute(new_line,'\(([^\)\(]*)\|\[[^\]\[]*\]\|{[^\}\{]*}\)','','g')
+    let line = substitute(new_line,'\(([^\)\(]*)\|\[[^\]\[]*\]\|{[^\}\{]*}\)','_','g')
   endwhile
 
   " Trim Blank
@@ -165,7 +165,7 @@ function DoIndentAssign(ind, line)
 endfunction
 
 function! s:IsOneLineIndent(line)
-  return match(a:line, '^[\}\)\]]*\s*\(if\|else\|while\|try\|catch\|finally\|for\|else\s\+if\)$') != -1
+  return match(a:line, '^[\}\)\]]*\s*\(if\|else\|while\|try\|catch\|finally\|for\|else\s\+if\)\s*_\=$') != -1
 endfunction
 
 
@@ -185,7 +185,7 @@ function! GetJsIndent()
     let pline = s:GetLine(pnum)
     let ind = DoIndentPrev(ind, pline)
     if s:IsAssign(pline) && match(s:GetLine(v:lnum), s:expr_all)==-1
-      let ind = DoIndentAssign(ind, getline(pnum))
+      let ind = DoIndentAssign(ind, pline)
     endif
   else
     if s:IsPartial(ppline) && ppnum == pnum-1

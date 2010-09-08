@@ -1,3 +1,6 @@
+2010-09-08 Version 1.2.1
+	Some optimize
+
 2010-09-08 Version 1.2.0
 	Support: indent for if, else, else if, while, try, catch, finally
 	without brackets

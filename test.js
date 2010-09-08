@@ -6,12 +6,13 @@
   /* a [{( */
   // b [{(
   comment('/* com', a /* [{( */); /* c */ // d
-  ok();
+    ok();
   // Assign Test
   var a, /* { */
       b, // [
       c = '{'
   var a = "Hello" +
+          (3+4) +
           "World"
   d = function() {
     aoeu
@@ -80,6 +81,8 @@ string_test("('",'("',"[",'{',"\"{","\\'{");
   } else {
     e;
   }
+  if (a)
+    b;
   if(a)
     b;
   else if(k) {
