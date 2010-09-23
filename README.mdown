@@ -7,6 +7,43 @@ Install details
 
 copy indent/javascript.vim to ~/.vim/indent
 
+Options
+-------
+* g:SimpleJsIndenter_BriefMode (default 0)
+  > set 1 to turn brief mode on.
+
+About Brief Mode
+----------------
+        Add 'let g:SimpleJsIndenter_BriefMode = 1' to ~/.vimrc to use brief mode.
+
+        In Brief Mode script will not indent more than one shiftwidth each line.
+        eg:
+        For a lot of people prefer set shiftwidth to 4, so in normal mode, it will indent looks like
+        each(function {
+        ........something(); // indent 2 shiftwidth
+        });
+        (((
+        ............something(); // indent 3 shiftwidth
+        )));
+
+        In brief mode it will indent as
+        each(function {
+        ....something(); // indent 1 shiftwidth
+        });
+        (((
+        ....something();
+        )))
+
+        ATTENTION:
+        Be sure to always close the brackets with the same level as open, or the after code will not indent correctly.
+        eg:
+        function() {
+        ....each(function() {
+        ....} // should use }); instead of }
+        );    // already indented..
+        something();
+        }
+
 Indent Effects
 --------------
         /*

@@ -1,15 +1,23 @@
 " Vim indent file
 " Language:	JavaScript
 " Maintainer:	JiangMiao <jiangfriend@gmail.com>
-" Last Change:  2010-09-08
-" Version: 1.2.1
+" Last Change:  2010-09-23
+" Version: 1.3.0
 
 if exists('b:did_indent')
   finish
 endif
+
+" Disable Assginment let script will not indent assignment.
+let g:SimpleJsIndenter_DisableAssignment = 0
+
+" Brief Mode will indent no more than one level.
+let g:SimpleJsIndenter_BriefMode = 0
+
 let b:did_indent = 1
 let b:indented = 0
 let b:in_comment = 0
+let g:SimpleJsIndenter_DisableAssignment = 0
 
 setlocal indentexpr=GetJsIndent()
 setlocal indentkeys+=0},0),0],0=*/,0=/*,*<Return>
@@ -44,6 +52,17 @@ function! DoIndentPrev(ind,str)
     endif
 
   endwhile
+
+  "BriefMode
+  if(g:SimpleJsIndenter_BriefMode) 
+    if(ind<a:ind)
+      let ind =  a:ind - &sw
+    endif
+    if(ind>a:ind)
+      let ind =  a:ind + &sw
+    endif
+  endif
+
   return ind
 endfunction
 
@@ -56,6 +75,17 @@ function! DoIndent(ind, str)
   let first = 1
   let mstr = matchstr(line, '^'.s:expr_right.'*')
   let ind = ind - &sw * strlen(mstr)
+
+  "BriefMode
+  if(g:SimpleJsIndenter_BriefMode) 
+    if(ind<a:ind)
+      let ind = a:ind - &sw
+    endif
+    if(ind>a:ind)
+      let ind = a:ind + &sw
+    endif
+  endif
+
   if ind<0
     let ind=0
   endif
@@ -78,9 +108,6 @@ function! TrimLine(pline)
       let line = substitute(new_line, '"[^"]*"','_','')
     endif
   endwhile
-  " Regexp
-  let line = substitute(line, '^/[^\*].*/','_','g')
-  let line = substitute(line, '[^/]/[^*].*/','_','g')
 
   " Comment
   let line = substitute(line, "/\\*.\\{-}\\*/",'','g')
@@ -88,6 +115,10 @@ function! TrimLine(pline)
   let line = substitute(line, '^\s*//.*$','//c','g')
   let line = substitute(line, '[^/]//.*$','','')
   let line = substitute(line, "/\\*.*$",'/*','')
+
+  " Regexp
+  let line = substitute(line, '^/[^\*].*/','_','g')
+  let line = substitute(line, '[^/]/[^*].*/','_','g')
 
   " Brackets
   let new_line = ''
@@ -184,8 +215,10 @@ function! GetJsIndent()
     let ind = indent(pnum)
     let pline = s:GetLine(pnum)
     let ind = DoIndentPrev(ind, pline)
-    if s:IsAssign(pline) && match(s:GetLine(v:lnum), s:expr_all)==-1
-      let ind = DoIndentAssign(ind, pline)
+    if(!g:SimpleJsIndenter_DisableAssignment) 
+      if s:IsAssign(pline) && match(s:GetLine(v:lnum), s:expr_all)==-1
+        let ind = DoIndentAssign(ind, pline)
+      endif
     endif
   else
     if s:IsPartial(ppline) && ppnum == pnum-1
