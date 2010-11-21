@@ -6,7 +6,7 @@
   /* a [{( */
   // b [{(
   comment('/* com', a /* [{( */); /* c */ // d
-    ok();
+  ok();
   // Assign Test
   var a, /* { */
       b, // [
@@ -17,10 +17,20 @@
   d = function() {
     aoeu
   }
+
+  function a() {
+    test(["hello",
+        "world"
+    ])
+  }
   var k = function() {
     var k=3,
         m=4
   }
+
+  var m = new SWFUpload({
+      debug: false
+  });
 
   var rurl = /{[('"/,
       r20 = /%20/g,
@@ -98,4 +108,21 @@ string_test("('",'("',"[",'{',"\"{","\\'{");
   finally
     c;
   ok();
+}
+
+query = query.replace(/\=\s*([^'"\]]*)\s*\]/g, "='$1']");
+// Only use querySelectorAll on non-XML documents
+{
+  for ( var type in Expr.match ) {
+    Expr.match[ type ] = new RegExp( Expr.match[ type ].source + (/(?![^\[]*\])(?![^\(]*\))/.source) );
+    Expr.leftMatch[ type ] = new RegExp( /(^(?:.|\r|\n)\/*?)/.source + Expr.match[ type ].source.replace(/\\(\d+)/g, fescape) );
+  }
+}
+{
+  add: function( handleObj ) {
+    jQuery.event.add( this,
+      liveConvert( handleObj.origType, handleObj.selector ),
+      jQuery.extend({}, handleObj, {handler: liveHandler, guid: handleObj.handler.guid}) ); 
+  },
+  hello()
 }

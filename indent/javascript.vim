@@ -1,18 +1,22 @@
 " Vim indent file
 " Language:	JavaScript
 " Maintainer:	JiangMiao <jiangfriend@gmail.com>
-" Last Change:  2010-09-23
-" Version: 1.3.0
+" Last Change:  2010-11-22
+" Version: 1.3.1
 
 if exists('b:did_indent')
   finish
 endif
 
 " Disable Assginment let script will not indent assignment.
-let g:SimpleJsIndenter_DisableAssignment = 0
+if(!exists('g:SimpleJsIndenter_DisableAssignment'))
+  let g:SimpleJsIndenter_DisableAssignment = 0
+endif
 
 " Brief Mode will indent no more than one level.
-let g:SimpleJsIndenter_BriefMode = 0
+if(!exists('g:SimpleJsIndenter_BriefMode'))
+  let g:SimpleJsIndenter_BriefMode = 0
+endif
 
 let b:did_indent = 1
 let b:indented = 0
@@ -99,15 +103,18 @@ function! TrimLine(pline)
 
   " Strings
   let new_line = ''
-  while new_line != line
+  while 1 
     let new_line = line
-    let m = matchstr(line,'[''"]')
-    if m==''''
-      let line = substitute(new_line, "'[^']*'", '_','')
-    elseif m=='"'
-      let line = substitute(new_line, '"[^"]*"','_','')
+    let new_line = substitute(new_line, "'[^'\"/]*'", '_','g')
+    let new_line = substitute(new_line, '"[^''"/]*"','_','g')
+    let new_line = substitute(new_line, '/[^''"/]*/"','_','g')
+    if(new_line==line)
+      break
     endif
+    let line = new_line
   endwhile
+  let line = substitute(line, "'.*'",'_', 'g')
+  let line = substitute(line, '".*"','_', 'g')
 
   " Comment
   let line = substitute(line, "/\\*.\\{-}\\*/",'','g')
@@ -117,8 +124,8 @@ function! TrimLine(pline)
   let line = substitute(line, "/\\*.*$",'/*','')
 
   " Regexp
-  let line = substitute(line, '^/[^\*].*/','_','g')
-  let line = substitute(line, '[^/]/[^*].*/','_','g')
+  let line = substitute(line, '^/[^\*][^\/]*/','_','g')
+  let line = substitute(line, '\([^/]\)/[^*][^\/]*/','\1_','g')
 
   " Brackets
   let new_line = ''
@@ -140,7 +147,15 @@ endfunction
 let s:expr_partial = '[\+\-\*\/\|\&\,]$'
 let s:expr_partial2 = '[\+\-\*\/\|\&]$'
 function! s:IsPartial(line)
-  return match(a:line, '\*/$') == -1 && match(a:line, s:expr_partial)!=-1
+  " Add IndentLoose for
+  " function a() {
+  "   test(["hello",
+  "     "world",
+  "     "a",
+  "     "b"
+  "   ]) // Failed
+  " }
+  return match(a:line, '\*/$') == -1 && match(a:line, s:expr_partial)!=-1 && ( match(a:line, s:expr_all)==-1 || s:IsOneLineIndentLoose(a:line) )
 endfunction
 
 function! s:IsComment(line)
@@ -199,6 +214,11 @@ function! s:IsOneLineIndent(line)
   return match(a:line, '^[\}\)\]]*\s*\(if\|else\|while\|try\|catch\|finally\|for\|else\s\+if\)\s*_\=$') != -1
 endfunction
 
+function! s:IsOneLineIndentLoose(line)
+  " _\= equal _? in PCRE
+  return match(a:line, '^[\}\)\]]*\s*\(if\|else\|while\|try\|catch\|finally\|for\|else\s\+if\)') != -1
+endfunction
+
 
 function! GetJsIndent()
   if v:lnum == 1
@@ -223,14 +243,10 @@ function! GetJsIndent()
   else
     if s:IsPartial(ppline) && ppnum == pnum-1
       let pnum =  s:SearchBack(ppnum)
-      let ind = indent(pnum)
-      let pline = s:GetLine(pnum)
-    else
-      let pnum = pnum
-      let ind = indent(pnum)
-      let pline = s:GetLine(pnum)
-      let ind = DoIndentPrev(ind, pline)
     endif
+    let ind = indent(pnum)
+    let pline = s:GetLine(pnum)
+    let ind = DoIndentPrev(ind, pline)
 
     let ppnum = prevnonblank(pnum-1)
     let ppline = s:GetLine(ppnum)
@@ -240,6 +256,19 @@ function! GetJsIndent()
     if s:IsOneLineIndent(ppline)
       let ind = ind - &sw
     endif
+  endif
+
+  " If pline is indented, and ppline is partial then indent 
+  " Fix for
+  " function() {
+  "   b( this,
+  "     a(),
+  "     d() ); 
+  " },
+  let real_pnum = prevnonblank(v:lnum-1)
+  if(real_pnum!=pnum)
+    let pline = s:GetLine(real_pnum)
+    let ind = DoIndentPrev(ind, pline)
   endif
 
   let line = s:GetLine(v:lnum)
