@@ -1,8 +1,8 @@
 " Vim indent file
 " Language:	JavaScript
 " Maintainer:	JiangMiao <jiangfriend@gmail.com>
-" Last Change:  2010-11-22
-" Version: 1.3.1
+" Last Change:  2011-01-07
+" Version: 1.3.2
 
 if exists('b:did_indent')
   finish
@@ -21,7 +21,6 @@ endif
 let b:did_indent = 1
 let b:indented = 0
 let b:in_comment = 0
-let g:SimpleJsIndenter_DisableAssignment = 0
 
 setlocal indentexpr=GetJsIndent()
 setlocal indentkeys+=0},0),0],0=*/,0=/*,*<Return>
@@ -103,11 +102,41 @@ function! TrimLine(pline)
 
   " Strings
   let new_line = ''
+  let min_pos = 0
   while 1 
     let new_line = line
-    let new_line = substitute(new_line, "'[^'\"/]*'", '_','g')
-    let new_line = substitute(new_line, '"[^''"/]*"','_','g')
-    let new_line = substitute(new_line, '/[^''"/]*/"','_','g')
+    let c = ''
+    let pos = match(new_line, '''', min_pos)
+    if pos != -1 && (pos < min_pos||min_pos==0)
+      let c = ''''
+      let min_pos = pos
+    endif
+    let pos = match(new_line, '"')
+    if pos != -1 && (pos < min_pos||min_pos==0)
+      let c = '"'
+      let min_pos = pos
+    endif
+    let pos = match(new_line, '/')
+    if pos != -1 && (pos < min_pos||min_pos==0)
+      let c = '/'
+      let min_pos = pos
+    endif
+    if min_pos == -1
+      break
+    endif
+
+    if c == ''''
+      let new_line = substitute(new_line, "'[^']*'", '_','g')
+    elseif c == '"'
+      let new_line = substitute(new_line, '"[^"]*"','_','g')
+    elseif c == '/'
+      " Skip all if match a comment
+      if new_line[pos+1] == '/' || new_line[pos+1] == '*'
+        let new_line = substitute(new_line, '/.*', '', 'g')
+        break
+      endif
+      let new_line = substitute(new_line, '/[^/]\+/','_','g')
+    endif
     if(new_line==line)
       break
     endif

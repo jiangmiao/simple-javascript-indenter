@@ -126,3 +126,23 @@ query = query.replace(/\=\s*([^'"\]]*)\s*\]/g, "='$1']");
   },
   hello()
 }
+
+{
+  if ( jQuery.isWindow( elem ) ) {
+  } else if ( elem.nodeType === 9 ) {
+    // Either scroll[Width/Height] or offset[Width/Height], whichever is greater
+    return Math.max(
+      elem.documentElement["client" + name],
+      elem.body["scroll" + name], elem.documentElement["scroll" + name],
+      elem.body["offset" + name], elem.documentElement["offset" + name]
+    );
+
+    // Get or set width or height on the element
+  }
+
+  function a() {
+    $('"', {'b'}, function() {
+    });
+  }
+}
+
