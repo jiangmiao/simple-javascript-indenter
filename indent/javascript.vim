@@ -1,8 +1,8 @@
 " Vim indent file
 " Language:	JavaScript
 " Maintainer:	JiangMiao <jiangfriend@gmail.com>
-" Last Change:  2011-01-07
-" Version: 1.3.2
+" Last Change:  2011-01-08
+" Version: 1.3.3
 
 if exists('b:did_indent')
   finish
@@ -127,15 +127,22 @@ function! TrimLine(pline)
 
     if c == ''''
       let new_line = substitute(new_line, "'[^']*'", '_','g')
+      let min_pos = min_pos + 1
     elseif c == '"'
       let new_line = substitute(new_line, '"[^"]*"','_','g')
+      let min_pos = min_pos + 1
     elseif c == '/'
       " Skip all if match a comment
-      if new_line[pos+1] == '/' || new_line[pos+1] == '*'
+      if new_line[min_pos+1] == '/' 
         let new_line = substitute(new_line, '/.*', '', 'g')
+        let line = new_line
         break
+      elseif new_line[min_pos+1] == '*'
+        let new_line = substitute(new_line, '/\*.\{-}\*/', '', 'g')
+      else
+        let new_line = substitute(new_line, '/[^/]\+/','_','g')
+        let min_pos = min_pos + 1
       endif
-      let new_line = substitute(new_line, '/[^/]\+/','_','g')
     endif
     if(new_line==line)
       break
@@ -151,10 +158,6 @@ function! TrimLine(pline)
   let line = substitute(line, '^\s*//.*$','//c','g')
   let line = substitute(line, '[^/]//.*$','','')
   let line = substitute(line, "/\\*.*$",'/*','')
-
-  " Regexp
-  let line = substitute(line, '^/[^\*][^\/]*/','_','g')
-  let line = substitute(line, '\([^/]\)/[^*][^\/]*/','\1_','g')
 
   " Brackets
   let new_line = ''

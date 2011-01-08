@@ -144,5 +144,12 @@ query = query.replace(/\=\s*([^'"\]]*)\s*\]/g, "='$1']");
     $('"', {'b'}, function() {
     });
   }
+
+  test(//aoeuaou{
+  hello();
+);
+  test(/*a'*/,'ee') {
+    foo();
+  }
 }
 
