@@ -1,8 +1,8 @@
 " Vim indent file
 " Language:	JavaScript
 " Maintainer:	JiangMiao <jiangfriend@gmail.com>
-" Last Change:  2011-01-08
-" Version: 1.3.3
+" Last Change:  2011-03-22
+" Version: 1.3.4
 
 if exists('b:did_indent')
   finish
@@ -106,18 +106,20 @@ function! TrimLine(pline)
   while 1 
     let new_line = line
     let c = ''
-    let pos = match(new_line, '''', min_pos)
-    if pos != -1 && (pos < min_pos||min_pos==0)
+    let base_pos = min_pos
+    let min_pos = -1
+    let pos = match(new_line, '''', base_pos)
+    if pos != -1 && (pos < min_pos||min_pos==-1)
       let c = ''''
       let min_pos = pos
     endif
-    let pos = match(new_line, '"')
-    if pos != -1 && (pos < min_pos||min_pos==0)
+    let pos = match(new_line, '"', base_pos)
+    if pos != -1 && (pos < min_pos||min_pos==-1)
       let c = '"'
       let min_pos = pos
     endif
-    let pos = match(new_line, '/')
-    if pos != -1 && (pos < min_pos||min_pos==0)
+    let pos = match(new_line, '/', base_pos)
+    if pos != -1 && (pos < min_pos||min_pos==-1)
       let c = '/'
       let min_pos = pos
     endif

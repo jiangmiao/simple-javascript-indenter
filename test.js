@@ -146,10 +146,13 @@ query = query.replace(/\=\s*([^'"\]]*)\s*\]/g, "='$1']");
   }
 
   test(//aoeuaou{
-  hello();
-);
+    hello();
+  );
   test(/*a'*/,'ee') {
     foo();
+  }
+  function escapeattr(b) {
+    return (/./i, "") : ""
   }
 }
 
