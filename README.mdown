@@ -44,6 +44,12 @@ About Brief Mode
         something();
         }
 
+About Indenting in switch {}
+----------------------------
+It's not a perfect indenting.
+see https://github.com/jiangmiao/simple-javascript-indenter/issues#issue/2
+
+
 Indent Effects
 --------------
         /*

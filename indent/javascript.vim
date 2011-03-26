@@ -1,8 +1,8 @@
 " Vim indent file
 " Language:	JavaScript
 " Maintainer:	JiangMiao <jiangfriend@gmail.com>
-" Last Change:  2011-03-22
-" Version: 1.3.4
+" Last Change:  2011-03-26
+" Version: 1.4.0
 
 if exists('b:did_indent')
   finish
@@ -31,6 +31,8 @@ endif
 let s:expr_left = '[\[\{\(]'
 let s:expr_right = '[\)\}\]]'
 let s:expr_all = '[\[\{\(\)\}\]]'
+
+let s:expr_case = '\s\+\(case\s\+[^\:]*\|default\)\s*:\s*'
 
 " Check prev line
 function! DoIndentPrev(ind,str) 
@@ -66,6 +68,10 @@ function! DoIndentPrev(ind,str)
     endif
   endif
 
+  if (match(' '.pline, s:expr_case)!=-1)
+    let ind = ind + &sw/2
+  endif
+
   return ind
 endfunction
 
@@ -89,6 +95,10 @@ function! DoIndent(ind, str)
     endif
   endif
 
+
+  if (match(' '.line, s:expr_case)!=-1)
+    let ind = a:ind - &sw/2
+  endif
   if ind<0
     let ind=0
   endif
