@@ -1,5 +1,8 @@
+2011-04-09 Version 1.4.1
+	Update: Indent current line when input } ) ]
+
 2011-03-26 Version 1.4.0
-  New: Support switch case indenting.
+	New: Support switch case indenting.
 
 2011-03-22 Version 1.3.4
 	Fix: failed indent for 
