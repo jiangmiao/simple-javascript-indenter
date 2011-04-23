@@ -1,7 +1,8 @@
 /*
-* Comment Test 
-* function() {
-*/
+ * Comment Test 
+ * function() {
+ *
+ */
 {
   /* a [{( */
   // b [{(

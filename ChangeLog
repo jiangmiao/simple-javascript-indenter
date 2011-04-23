@@ -1,5 +1,9 @@
-2011-04-09 Version 1.4.1
+2011-04-23 Version 1.4.1
 	Update: Indent current line when input } ) ]
+		See https://github.com/jiangmiao/simple-javascript-indenter/issues/4
+
+	Update: Change comment indentation style
+		See https://github.com/jiangmiao/simple-javascript-indenter/issues/5
 
 2011-03-26 Version 1.4.0
 	New: Support switch case indenting.

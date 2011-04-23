@@ -1,7 +1,7 @@
 " Vim indent file
 " Language:	JavaScript
 " Maintainer:	JiangMiao <jiangfriend@gmail.com>
-" Last Change:  2011-04-09
+" Last Change:  2011-04-23
 " Version: 1.4.1
 
 if exists('b:did_indent')
@@ -28,11 +28,13 @@ if exists("*GetJsIndent")
   finish 
 endif
 
-let s:expr_left = '[\[\{\(]'
+let s:expr_left  = '[\[\{\(]'
 let s:expr_right = '[\)\}\]]'
-let s:expr_all = '[\[\{\(\)\}\]]'
+let s:expr_all   = '[\[\{\(\)\}\]]'
 
-let s:expr_case = '\s\+\(case\s\+[^\:]*\|default\)\s*:\s*'
+let s:expr_case          = '\s\+\(case\s\+[^\:]*\|default\)\s*:\s*'
+let s:expr_comment_start = '/\*c'
+let s:expr_comment_end   = 'c\*/'
 
 " Check prev line
 function! DoIndentPrev(ind,str) 
@@ -72,6 +74,15 @@ function! DoIndentPrev(ind,str)
     let ind = ind + &sw/2
   endif
 
+  if match(pline, s:expr_comment_start) != -1
+    let ind = ind + 1
+  endif
+
+  if match(pline, s:expr_comment_end) != -1
+    let ind = ind - 1
+  endif
+
+
   return ind
 endfunction
 
@@ -99,9 +110,11 @@ function! DoIndent(ind, str)
   if (match(' '.line, s:expr_case)!=-1)
     let ind = a:ind - &sw/2
   endif
+
   if ind<0
     let ind=0
   endif
+
   return ind
 endfunction
 
@@ -166,10 +179,11 @@ function! TrimLine(pline)
 
   " Comment
   let line = substitute(line, "/\\*.\\{-}\\*/",'','g')
-  let line = substitute(line, '^\s*\*.*','','g')
   let line = substitute(line, '^\s*//.*$','//c','g')
   let line = substitute(line, '[^/]//.*$','','')
-  let line = substitute(line, "/\\*.*$",'/*','')
+  let line = substitute(line, '/\*.*$','/*c','')
+  let line = substitute(line, '^.\{-}\*/','c*/','')
+  let line = substitute(line, '^\s*\*.*','','g')
 
   " Brackets
   let new_line = ''
