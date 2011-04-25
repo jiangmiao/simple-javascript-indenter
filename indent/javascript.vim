@@ -1,8 +1,10 @@
 " Vim indent file
 " Language:	JavaScript
 " Maintainer:	JiangMiao <jiangfriend@gmail.com>
-" Last Change:  2011-04-23
-" Version: 1.4.1
+" Last Change:  2011-04-25
+" Version: 1.4.2
+" Homepage: http://www.vim.org/scripts/script.php?script_id=3227
+" Repository: https://github.com/jiangmiao/simple-javascript-indenter
 
 if exists('b:did_indent')
   finish
@@ -16,6 +18,11 @@ endif
 " Brief Mode will indent no more than one level.
 if(!exists('g:SimpleJsIndenter_BriefMode'))
   let g:SimpleJsIndenter_BriefMode = 0
+endif
+
+" The value should be float, -1/2 should be written in -0.5
+if(!exists('g:SimpleJsIndenter_CaseIndentLevel'))
+  let g:SimpleJsIndenter_CaseIndentLevel = 0
 endif
 
 let b:did_indent = 1
@@ -71,7 +78,7 @@ function! DoIndentPrev(ind,str)
   endif
 
   if (match(' '.pline, s:expr_case)!=-1)
-    let ind = ind + &sw/2
+    let ind = ind - &sw * g:SimpleJsIndenter_CaseIndentLevel
   endif
 
   if match(pline, s:expr_comment_start) != -1
@@ -108,7 +115,7 @@ function! DoIndent(ind, str)
 
 
   if (match(' '.line, s:expr_case)!=-1)
-    let ind = a:ind - &sw/2
+    let ind = ind + &sw * g:SimpleJsIndenter_CaseIndentLevel
   endif
 
   if ind<0
