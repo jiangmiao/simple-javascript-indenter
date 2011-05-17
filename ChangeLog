@@ -1,5 +1,5 @@
 2011-04-25 Version 1.4.2
-  Update: Add option g:SimpleJsIndenter_CaseIndentLevel
+	Update: Add option g:SimpleJsIndenter_CaseIndentLevel
 
 2011-04-23 Version 1.4.1
 	Update: Indent current line when input } ) ]
