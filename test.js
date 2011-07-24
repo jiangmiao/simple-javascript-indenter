@@ -4,6 +4,13 @@
  *
  */
 {
+
+  {
+    console.info((function() {
+    }).something);
+    next();
+  }
+
   /* a [{( */
   // b [{(
   comment('/* com', a /* [{( */); /* c */ // d
@@ -156,26 +163,26 @@ query = query.replace(/\=\s*([^'"\]]*)\s*\]/g, "='$1']");
   }
 
   switch (foo) {
-   case a: break;
+    case a: break;
 
-   case b: 
+    case b: 
     break;
 
-   case c: {
+    case c: {
       break;
     }
 
-   case d: {
+    case d: {
       switch (bar) {
-       case e:
+        case e:
         break;
 
-       default:
+        default:
         break;
       }
     }
 
-   default:
+    default:
     break;
   }
 }

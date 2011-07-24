@@ -1,8 +1,8 @@
 " Vim indent file
 " Language:	JavaScript
 " Maintainer:	JiangMiao <jiangfriend@gmail.com>
-" Last Change:  2011-04-25
-" Version: 1.4.2
+" Last Change:  2011-07-24
+" Version: 1.4.3
 " Homepage: http://www.vim.org/scripts/script.php?script_id=3227
 " Repository: https://github.com/jiangmiao/simple-javascript-indenter
 
@@ -51,6 +51,7 @@ function! DoIndentPrev(ind,str)
   let last = 0
   let mstr = matchstr(pline, '^'.s:expr_right.'*')
   let last = strlen(mstr)
+  let start_with_expr_right = last
   while 1
     let last=match(pline, s:expr_all, last)
     if last == -1
@@ -62,10 +63,13 @@ function! DoIndentPrev(ind,str)
     if match(str, s:expr_left) != -1
       let ind = ind + &sw
     else
-      let ind = ind - &sw
+      if start_with_expr_right == 0
+        let ind = ind - &sw
+      endif
     endif
 
   endwhile
+
 
   "BriefMode
   if(g:SimpleJsIndenter_BriefMode) 
@@ -101,7 +105,14 @@ function! DoIndent(ind, str)
   let last = 0
   let first = 1
   let mstr = matchstr(line, '^'.s:expr_right.'*')
-  let ind = ind - &sw * strlen(mstr)
+  let num = strlen(mstr)
+  let start_with_expr_right = num
+  " If start with expr right, then indent as more as possible.
+  if start_with_expr_right
+    let num = len(split(line, s:expr_right, 1)) - 1
+  end
+  let ind = ind - &sw * num
+
 
   "BriefMode
   if(g:SimpleJsIndenter_BriefMode) 
