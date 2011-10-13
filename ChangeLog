@@ -1,4 +1,17 @@
-2011-07-24 Version 1.4.2
+2011-10-13 Version 1.4.4
+	Fix: failed indent for
+		(a / b); // c (
+	
+	Fix: failed indent for
+		'' + "'" + // ' (
+
+	Fix: failed indent in Brief Mode for
+		foo (a(b,
+			c)) {
+			aoeu
+		}
+
+2011-07-24 Version 1.4.3
 	Fix: failed indent in brief mode, and optimize in normal mode for code
 	{
 		console.info((function() {

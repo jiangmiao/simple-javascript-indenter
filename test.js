@@ -3,14 +3,33 @@
  * function() {
  *
  */
+(a / b); // c
+'' + "'" + // ' (
 {
-
   {
     console.info((function() {
     }).something);
     next();
   }
 
+  foo (a(b,
+    c)) {
+    aoeu
+  }
+
+  a = "hello \
+  world"
+
+  /hello(world/
+  a + /aoe(uaoeu/
+  (a / b); // c ( /
+  (a / b); // (
+  /a\/b/ // c (
+  world
+
+  var rinput = /^(?:color|date|datetime|email|hidden|month|number|password|range|search|tel|text|time|url|week)$/i,
+      // #7653, #8125, #8152: local protocol detection
+  rlocalProtocol = /(?:^file|^widget|\-extension):$/
   /* a [{( */
   // b [{(
   comment('/* com', a /* [{( */); /* c */ // d
@@ -28,7 +47,7 @@
 
   function a() {
     test(["hello",
-        "world"
+      "world"
     ])
   }
   var k = function() {
@@ -37,11 +56,11 @@
   }
 
   var m = new SWFUpload({
-      debug: false
+    debug: false
   });
 
   var rurl = /{[('"/,
-      r20 = /%20/g,
+  r20 = /%20/g,
 
   a = 1,
   b = 2
@@ -52,16 +71,16 @@
 
 // Function nested
 ;(function($) {
-    $(document).ready(function() {
-        $('#foo').click(function() {
-            $.post(url, {
-                a: 1, 
-                b: 2,
-              }, function() {
-                ok(); 
-            });
-        });
+  $(document).ready(function() {
+    $('#foo').click(function() {
+      $.post(url, {
+        a: 1, 
+        b: 2,
+      }, function() {
+        ok(); 
+      });
     });
+  });
 })(jQuery);
 
 // Array Object Test
