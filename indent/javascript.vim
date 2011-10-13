@@ -1,8 +1,8 @@
 " Vim indent file
 " Language:	JavaScript
 " Maintainer:	JiangMiao <jiangfriend@gmail.com>
-" Last Change:  2011-10-13
-" Version: 1.4.4
+" Last Change:  2011-10-14
+" Version: 1.4.5
 " Homepage: http://www.vim.org/scripts/script.php?script_id=3227
 " Repository: https://github.com/jiangmiao/simple-javascript-indenter
 
@@ -182,9 +182,10 @@ function! TrimLine(pline)
         let sub_line = matchstr(line, '^/\*.\{-}\*/', min_pos)
       else
         " /.../ sometimes is not a regexp, (a / b); // c
-        let sub_line = matchstr(line, '^/[^/]\+/\([^/]\|$\)', min_pos)
-        if sub_line != ''
+        let m = matchlist(line, '^\(/[^/]\+/\)\([^/]\|$\)', min_pos)
+        if len(m)
           let new_line .= '_'
+          let sub_line = m[1]
         endif
       endif
     endif
