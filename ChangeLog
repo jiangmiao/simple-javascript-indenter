@@ -3,7 +3,7 @@
 
 	Fix: failed indent for
 		var a = /reg/,
-				c = 'bar'
+		    c = 'bar'
 
 	Optimize code
 
