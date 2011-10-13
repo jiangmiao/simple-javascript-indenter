@@ -86,7 +86,7 @@ function! DoIndentPrev(ind,str)
   let ind = a:ind + (ind_add - ind_dec) * &sw
 
   if (match(' '.pline, s:expr_case)!=-1)
-    let ind = ind - &sw * g:SimpleJsIndenter_CaseIndentLevel
+    let ind = float2nr(ind - &sw * g:SimpleJsIndenter_CaseIndentLevel)
   endif
 
   if match(pline, s:expr_comment_start) != -1
@@ -130,7 +130,7 @@ function! DoIndent(ind, str)
 
 
   if (match(' '.line, s:expr_case)!=-1)
-    let ind = ind + &sw * g:SimpleJsIndenter_CaseIndentLevel
+    let ind = float2nr(ind + &sw * g:SimpleJsIndenter_CaseIndentLevel)
   endif
 
   if ind<0
@@ -206,7 +206,7 @@ function! TrimLine(pline)
   let new_line = ''
   while new_line != line
     let new_line = line
-    let line = substitute(new_line,'\(([^)(]*)\|\[[^\][]*\]\|{[^}{]*}\)','_','g')
+    let line = substitute(line,'\(([^)(]*)\|\[[^\][]*\]\|{[^}{]*}\)','_','g')
   endwhile
 
   " Trim Blank
