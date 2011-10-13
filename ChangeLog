@@ -1,3 +1,12 @@
+2011-10-14 Version 1.4.5
+	Fix: float indent level is invalid in vim 7.3
+
+	Fix: failed indent for
+		var a = /reg/,
+				c = 'bar'
+
+	Optimize code
+
 2011-10-13 Version 1.4.4
 	Fix: failed indent for
 		(a / b); // c (
