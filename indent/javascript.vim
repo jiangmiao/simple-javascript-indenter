@@ -154,49 +154,35 @@ function! TrimLine(pline)
   while 1 
     let c = ''
     let base_pos = min_pos
-    let min_pos = -1
-    let pos = match(line, '''', base_pos)
-    if pos != -1 && (pos < min_pos||min_pos==-1)
-      let c = ''''
-      let min_pos = pos
-    endif
-    let pos = match(line, '"', base_pos)
-    if pos != -1 && (pos < min_pos||min_pos==-1)
-      let c = '"'
-      let min_pos = pos
-    endif
-    let pos = match(line, '/', base_pos)
-    if pos != -1 && (pos < min_pos||min_pos==-1)
-      let c = '/'
-      let min_pos = pos
-    endif
+    let min_pos = match(line, '[''"/]', base_pos)
     if min_pos == -1
       let new_line .= strpart(line, base_pos)
       break
     endif
+    let c = line[min_pos]
 
-    let sub_line = strpart(line, min_pos)
     let new_line .= strpart(line, base_pos, min_pos - base_pos)
+    let sub_line = ''
 
     if c == ''''
-      let sub_line = matchstr(sub_line, "^'[^']*'")
+      let sub_line = matchstr(line, "^'.\\{-}'", min_pos)
       if sub_line != ''
         let new_line .= '_'
       endif
     elseif c == '"'
-      let sub_line = matchstr(sub_line, '^"[^"]*"')
+      let sub_line = matchstr(line, '^".\{-}"', min_pos)
       if sub_line != ''
         let new_line .= '_'
       endif
     elseif c == '/'
       " Skip all if match a comment
       if line[min_pos+1] == '/' 
-        let sub_line = matchstr(sub_line, '^/.*')
+        let sub_line = matchstr(line, '^/.*', min_pos)
       elseif line[min_pos+1] == '*'
-        let sub_line = matchstr(sub_line, '^/\*.\{-}\*/')
+        let sub_line = matchstr(line, '^/\*.\{-}\*/', min_pos)
       else
         " /.../ sometimes is not a regexp, (a / b); // c
-        let sub_line = matchstr(sub_line, '^/[^/]\+/\([^/]\|$\)')
+        let sub_line = matchstr(line, '^/[^/]\+/\([^/]\|$\)', min_pos)
         if sub_line != ''
           let new_line .= '_'
         endif
