@@ -1,8 +1,8 @@
 " Vim indent file
 " Language:	JavaScript
 " Maintainer:	JiangMiao <jiangfriend@gmail.com>
-" Last Change:  2011-10-14
-" Version: 1.4.5
+" Last Change:  2011-10-19
+" Version: 1.4.6
 " Homepage: http://www.vim.org/scripts/script.php?script_id=3227
 " Repository: https://github.com/jiangmiao/simple-javascript-indenter
 
@@ -142,10 +142,13 @@ endfunction
 
 " Remove strings and comments
 function! TrimLine(pline)
-  let line = substitute(a:pline, "\\\\\\\\", '_','g')
-  let line = substitute(line, "\\\\.", '_','g')
+  let line = substitute(a:pline, '\\\\', '_','g')
+  let line = substitute(line, '\\.', '_','g')
+  " One line comment
+  let line = substitute(line, '^\s*/\*.*\*/\s*$', '//c', 'g')
+  let line = substitute(line, '^\s*//.*$', '//c', 'g')
   " remove all non ascii character
-  let line = substitute(line, "[^\x00-\x7f]", '', 'g')
+  let line = substitute(line, '[^\x00-\x7f]', '', 'g')
 
   " Strings
   let new_line = ''
@@ -178,6 +181,10 @@ function! TrimLine(pline)
       " Skip all if match a comment
       if line[min_pos+1] == '/' 
         let sub_line = matchstr(line, '^/.*', min_pos)
+        if min_pos == 0 && sub_line != ''
+          let new_line = '//c'
+          break
+        endif
       elseif line[min_pos+1] == '*'
         let sub_line = matchstr(line, '^/\*.\{-}\*/', min_pos)
       else
@@ -209,10 +216,10 @@ function! TrimLine(pline)
     let new_line = line
     let line = substitute(line,'\(([^)(]*)\|\[[^\][]*\]\|{[^}{]*}\)','_','g')
   endwhile
-
+  
   " Trim Blank
-  " let line = substitute(line, '\(\w\+\)\s\+\(\W\+\)','\1\2','g')
-  let line = matchlist(line, "^\\s*\\(.\\{-}\\)\\s*$")[1]
+  let line = matchlist(line, '\s*\(.\{-}\)\s*$')[1]
+
   return line
 endfunction
 
@@ -235,11 +242,12 @@ function! s:IsPartial(line)
 endfunction
 
 function! s:IsComment(line)
-  return match(line, '^//.*$') != -1
+  return a:line =~ '^\s*//' || a:line =~ '^\s*/\*.*\*/\s*$'
 endfunction
 function! s:SearchBack(num)
   let num = a:num
   let new_num = num
+  let partial = 0
   while 1
     if new_num == 0
       break
@@ -248,8 +256,14 @@ function! s:SearchBack(num)
     if !s:IsComment(line)
       let line = TrimLine(line)
       if !s:IsPartial(line)
+        if partial > 0
+          " Store line number to last partial
+          let num = partial
+        endif
         break
       endif
+      " Save the partial postion
+      let partial = new_num
       if match(line, s:expr_all)!=-1
         let num = new_num
         break
@@ -268,10 +282,10 @@ function! s:AssignIndent(line)
 
   if(match(line,'.*=.*'.s:expr_partial2) != -1)
     return ind + strlen(matchstr(line, '.*=\s*'))
-  elseif(match(line,'var\s\+.*=\s*') != -1)
-    return ind + strlen(matchstr(line, 'var\s\+'))
-  elseif(match(line,'var\s\+') != -1)
-    return ind + strlen(matchstr(line, 'var\s\+'))
+  elseif(match(line,'\(var\|return\)\s\+.*=\s*') != -1)
+    return ind + strlen(matchstr(line, '\(var\|return\)\s\+'))
+  elseif(match(line,'\(var\|return\)\s\+') != -1)
+    return ind + strlen(matchstr(line, '\(var\|return\)\s\+'))
   elseif(match(line,'^\w\s\+=\s*.*[^,]$') != -1)
     return ind + strlen(matchstr(line, '^\w\s\+=\s*'))
   endif
@@ -306,7 +320,7 @@ function! GetJsIndent()
   let ppnum = prevnonblank(pnum - 1)
   let ppline = s:GetLine(ppnum)
 
-  if (s:IsPartial(pline) && pnum == v:lnum-1)||match(pline, s:expr_left)!=-1
+  if ((s:IsPartial(pline)||s:IsComment(pline)) && pnum == v:lnum-1)||match(pline, s:expr_left)!=-1
     let pnum = s:SearchBack(pnum)
     let ind = indent(pnum)
     let pline = s:GetLine(pnum)
@@ -317,9 +331,18 @@ function! GetJsIndent()
       endif
     endif
   else
-    if s:IsPartial(ppline) && ppnum == pnum-1
+    let fix = 1
+    " Ignore the comments
+    while s:IsComment(ppline)
+      let ppnum = prevnonblank(ppnum-1)
+      let ppline = s:GetLine(ppnum)
+      let fix += 1
+    endwhile
+
+    if s:IsPartial(ppline) && ppnum == pnum- fix
       let pnum =  s:SearchBack(ppnum)
     endif
+
     let ind = indent(pnum)
     let pline = s:GetLine(pnum)
     let ind = DoIndentPrev(ind, pline)

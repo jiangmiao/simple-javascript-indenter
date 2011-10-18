@@ -1,3 +1,19 @@
+2011-10-19 Version 1.4.9
+
+        New: return indent supported
+
+                return a +
+                       b +
+                       c;
+
+        Fix: failed indent for
+
+                var a,
+                    // ca
+                    b,
+                    /* cb */
+                    c;
+
 2011-10-14 Version 1.4.5
 	Fix: float indent level is invalid in vim 7.3
 

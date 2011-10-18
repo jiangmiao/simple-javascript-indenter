@@ -29,7 +29,10 @@
 
   var rinput = /^(?:color|date|datetime|email|hidden|month|number|password|range|search|tel|text|time|url|week)$/i,
       // #7653, #8125, #8152: local protocol detection
-  rlocalProtocol = /(?:^file|^widget|\-extension):$/
+      rlocalProtocol = /(?:^file|^widget|\-extension):$/,
+      /* comment 2 */
+      assigment2;
+
   /* a [{( */
   // b [{(
   comment('/* com', a /* [{( */); /* c */ // d
@@ -39,9 +42,12 @@
       b, // [
       /reg/,
       c = '{'
-  var a = "Hello" +
-          (3+4) +
-          "World"
+  var a = "Hello"
+  (3+4) +
+  "World"
+  return a,
+         b,
+         c;
   d = function() {
     aoeu
   }
@@ -106,7 +112,7 @@
 
   // One Line Test
   {
-    if( a == b &&
+    if( a == b && // comment
       c == d ||
       e == f) 
     {
