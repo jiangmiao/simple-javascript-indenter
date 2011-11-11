@@ -30,7 +30,7 @@ let b:indented = 0
 let b:in_comment = 0
 
 setlocal indentexpr=GetJsIndent()
-setlocal indentkeys+==},=),=],0=*/,0=/*,0=\,,*<Return>
+setlocal indentkeys+==},=),=],0=*/,0=/*,0=\,,0=;,*<Return>
 if exists("*GetJsIndent")
   finish 
 endif
