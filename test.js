@@ -213,3 +213,24 @@
   }
 }
 
+var a = a
+  , b = b
+  , c = c;
+
+var a = a
+  , b = b
+  ;
+
+foo({
+    a : a
+  , b : b
+  , c : c
+  , d : {
+      e : e
+      f : f
+    }
+  , g : {[
+        h : h
+      , i : i
+    ]}
+});
