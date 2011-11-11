@@ -52,16 +52,16 @@
 
 // Function nested
 ;(function($) {
-    $(document).ready(function() {
-        $('#foo').click(function() {
-            $.post(url, {
-                a: 1, 
-                b: 2,
-              }, function() {
-                ok(); 
-            });
-        });
-    });
+  $(document).ready(function() {
+      $('#foo').click(function() {
+          $.post(url, {
+              a: 1, 
+              b: 2,
+            }, function() {
+              ok(); 
+          });
+      });
+  });
 })(jQuery);
 
 // Array Object Test
@@ -163,27 +163,47 @@ query = query.replace(/\=\s*([^'"\]]*)\s*\]/g, "='$1']");
   }
 
   switch (foo) {
-    case a: break;
+  case a: break;
 
-    case b: 
+  case b: 
     break;
 
-    case c: {
+  case c: {
       break;
     }
 
-    case d: {
+  case d: {
       switch (bar) {
-        case e:
+      case e:
         break;
 
-        default:
+      default:
         break;
       }
     }
 
-    default:
+  default:
     break;
   }
 }
 
+var a = a
+  , b = b
+  , d = d;
+
+var a = a
+  , b = b
+  , c = c
+  ;
+
+foo([{
+      a : a
+    , b : b
+    , c : c
+    , d : d
+    , e : e
+    , x : {
+        y : y
+      , z : z
+      }
+}])
