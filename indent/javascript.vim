@@ -30,7 +30,7 @@ let b:indented = 0
 let b:in_comment = 0
 
 setlocal indentexpr=GetJsIndent()
-setlocal indentkeys+==},=),=],0=*/,0=/*,*<Return>
+setlocal indentkeys+==},=),=],0=*/,0=/*,0=\,,0=;,*<Return>
 if exists("*GetJsIndent")
   finish 
 endif
@@ -42,6 +42,11 @@ let s:expr_all   = '[[{()}\]]'
 let s:expr_case          = '\s\+\(case\s\+[^\:]*\|default\)\s*:\s*'
 let s:expr_comment_start = '/\*c'
 let s:expr_comment_end   = 'c\*/'
+
+let s:expr_comma_start = '^\s*,'
+let s:expr_var = '^\s*var\s'
+let s:expr_var_stop = ';'
+let s:expr_semic_start = '^\s*;'
 
 " Check prev line
 function! DoIndentPrev(ind,str) 
@@ -97,15 +102,27 @@ function! DoIndentPrev(ind,str)
     let ind = ind - 1
   endif
 
+  if match(pline, s:expr_comma_start) != -1
+    let ind = ind + 2
+    if match(pline, s:expr_var_stop) != -1
+      let ind = ind - 4
+    endif
+  endif
+
+  " buggy
+  if match(pline, s:expr_semic_start) != -1
+    let ind = ind - 2
+  endif
 
   return ind
 endfunction
 
 
 " Check current line
-function! DoIndent(ind, str) 
+function! DoIndent(ind, str, pline) 
   let ind = a:ind
   let line = a:str
+  let pline = a:pline
   let last = 0
   let first = 1
   let mstr = matchstr(line, '^'.s:expr_right.'*')
@@ -131,6 +148,17 @@ function! DoIndent(ind, str)
 
   if (match(' '.line, s:expr_case)!=-1)
     let ind = float2nr(ind + &sw * g:SimpleJsIndenter_CaseIndentLevel)
+  endif
+
+  if (match(line, s:expr_comma_start) != -1)
+    let ind = ind - 2
+    if (match(pline, s:expr_var) != -1)
+      let ind = ind + 4
+    endif
+  endif
+
+  if (match(line, s:expr_semic_start) != -1 && match(pline, s:expr_comma_start) != -1)
+    let ind = ind - 2
   endif
 
   if ind<0
@@ -371,7 +399,7 @@ function! GetJsIndent()
   endif
 
   let line = s:GetLine(v:lnum)
-  let ind = DoIndent(ind, line)
+  let ind = DoIndent(ind, line, pline)
 
   return ind
 endfunction
