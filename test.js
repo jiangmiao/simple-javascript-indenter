@@ -226,8 +226,8 @@ foo({
   , b : b
   , c : c
   , d : {
-      e : e
-      f : f
+        e : e
+        f : f
     }
   , g : {[
         h : h

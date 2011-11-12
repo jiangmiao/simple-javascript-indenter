@@ -25,6 +25,10 @@ if(!exists('g:SimpleJsIndenter_CaseIndentLevel'))
   let g:SimpleJsIndenter_CaseIndentLevel = 0
 endif
 
+if(!exists('g:SimpleJsIndenter_GreedyIndent'))
+  let g:SimpleJsIndenter_GreedyIndent = 1
+endif
+
 let b:did_indent = 1
 let b:indented = 0
 let b:in_comment = 0
@@ -46,7 +50,11 @@ let s:expr_comment_end   = 'c\*/'
 let s:expr_comma_start = '^\s*,'
 let s:expr_var = '^\s*var\s'
 let s:expr_var_stop = ';'
-let s:expr_semic_start = '^\s*;'
+" add $ to Fix 
+" ;(function() {
+"   something;
+" })
+let s:expr_semic_start = '^\s*;\s*$'
 
 " Check prev line
 function! DoIndentPrev(ind,str) 
@@ -54,11 +62,18 @@ function! DoIndentPrev(ind,str)
   let pline = a:str
   let first = 1
   let last = 0
-  let mstr = matchstr(pline, '^'.s:expr_right.'*')
-  let last = strlen(mstr)
-  let start_with_expr_right = last
+
+  if g:SimpleJsIndenter_GreedyIndent || pline !~ s:expr_left || s:IsOneLineIndentLoose(pline)
+    let mstr = matchstr(pline, '^'.s:expr_right.'*')
+    let last = strlen(mstr)
+    let start_with_expr_right = last
+  else
+    let start_with_expr_right = 0
+  endif
+
   let ind_add = 0
   let ind_dec = 0
+
   while 1
     let last=match(pline, s:expr_all, last)
     if last == -1
@@ -125,14 +140,17 @@ function! DoIndent(ind, str, pline)
   let pline = a:pline
   let last = 0
   let first = 1
-  let mstr = matchstr(line, '^'.s:expr_right.'*')
-  let num = strlen(mstr)
-  let start_with_expr_right = num
-  " If start with expr right, then indent as more as possible.
-  if start_with_expr_right
-    let num = len(split(line, s:expr_right, 1)) - 1
-  end
-  let ind = ind - &sw * num
+
+  if g:SimpleJsIndenter_GreedyIndent || line !~ s:expr_left || s:IsOneLineIndentLoose(line)
+    let mstr = matchstr(line, '^'.s:expr_right.'*')
+    let num = strlen(mstr)
+    let start_with_expr_right = num
+    " If start with expr right, then indent as more as possible.
+    if start_with_expr_right
+      let num = len(split(line, s:expr_right, 1)) - 1
+    endif
+    let ind = ind - &sw * num
+  endif
 
 
   "BriefMode
