@@ -50,6 +50,9 @@ let s:expr_comment_end   = 'c\*/'
 let s:expr_comma_start = '^\s*,'
 let s:expr_var = '^\s*var\s'
 let s:expr_var_stop = ';'
+
+let s:expr_op_start = '^\s*\(\.\|+ \|&& || \)'
+
 " add $ to Fix 
 " ;(function() {
 "   something;
@@ -172,6 +175,24 @@ function! DoIndent(ind, str, pline)
     let ind = ind - 2
     if (match(pline, s:expr_var) != -1)
       let ind = ind + 4
+    endif
+  endif
+
+  " a
+  "   .foo <-
+  "   .bar <-
+  if (match(line, s:expr_op_start) != -1)
+    if (match(pline, s:expr_op_start) == -1)
+      let ind = ind + &sw
+    endif
+  endif
+
+  " a
+  "   .bar
+  " newline <-
+  if (match(pline, s:expr_op_start) != -1)
+    if (match(line, s:expr_op_start) == -1)
+      let ind = ind - &sw
     endif
   endif
 

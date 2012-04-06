@@ -218,6 +218,9 @@ var a = a
   , c = c;
 
 var a = a
+  , b = c
+
+var a = a
   , b = b
   ;
 
@@ -227,10 +230,35 @@ foo({
   , c : c
   , d : {
         e : e
-        f : f
+      , f : f
     }
   , g : {[
         h : h
       , i : i
     ]}
 });
+
+foo()
+  .foo
+  .ff
+
+bar()
+  .foo
+  .bar
+
+if( a == b
+  && c == d
+  && e == f
+  || g == h
+  || i == j ) {
+
+  a = b
+    + c
+    + d
+
+  a = b
+    + c
+    + d
+}
+
+
