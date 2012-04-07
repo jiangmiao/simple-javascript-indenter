@@ -34,7 +34,7 @@ let b:indented = 0
 let b:in_comment = 0
 
 setlocal indentexpr=GetJsIndent()
-setlocal indentkeys+==},=),=],0=*/,0=/*,0=\,,0=;,*<Return>
+setlocal indentkeys+==},=),=],0=*/,0=/*,0=\,,0=\.,0=;,*<Return>
 if exists("*GetJsIndent")
   finish 
 endif
@@ -51,7 +51,7 @@ let s:expr_comma_start = '^\s*,'
 let s:expr_var = '^\s*var\s'
 let s:expr_var_stop = ';'
 
-let s:expr_op_start = '^\s*\(\.\|+ \|&& || \)'
+let s:expr_op_start = '^\s*\(\.\|+ \|&&\|||\)'
 
 " add $ to Fix 
 " ;(function() {
