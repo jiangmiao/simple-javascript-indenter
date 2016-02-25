@@ -48,7 +48,7 @@ let s:expr_comment_start = '/\*c'
 let s:expr_comment_end   = 'c\*/'
 
 let s:expr_comma_start = '^\s*,'
-let s:expr_var = '^\s*var\s'
+let s:expr_var = '^\s*\(var\|let\)\s'
 let s:expr_var_stop = ';'
 " add $ to Fix 
 " ;(function() {
@@ -328,10 +328,10 @@ function! s:AssignIndent(line)
 
   if(match(line,'.*=.*'.s:expr_partial2) != -1)
     return ind + strlen(matchstr(line, '.*=\s*'))
-  elseif(match(line,'\(var\|return\)\s\+.*=\s*') != -1)
-    return ind + strlen(matchstr(line, '\(var\|return\)\s\+'))
-  elseif(match(line,'\(var\|return\)\s\+') != -1)
-    return ind + strlen(matchstr(line, '\(var\|return\)\s\+'))
+  elseif(match(line,'\(var\|let\|return\)\s\+.*=\s*') != -1)
+    return ind + strlen(matchstr(line, '\(var\|let\|return\)\s\+'))
+  elseif(match(line,'\(var\|let\|return\)\s\+') != -1)
+    return ind + strlen(matchstr(line, '\(var\|let\|return\)\s\+'))
   elseif(match(line,'^\w\s\+=\s*.*[^,]$') != -1)
     return ind + strlen(matchstr(line, '^\w\s\+=\s*'))
   endif
